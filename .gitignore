@@ -1,0 +1,12 @@
+.vscode
+backtest_results
+data
+hyperopt_results
+logs
+notebooks
+plot
+__pycache__
+
+.DS_Store
+*.lock
+config.json
