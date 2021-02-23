@@ -20,4 +20,5 @@ jobs:
             set -euo pipefail
 
             cd /home/lucy
+            docker-compose pull
             docker-compose up --detach --remove-orphans
