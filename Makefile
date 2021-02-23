@@ -16,17 +16,24 @@ backtest:
 hyperopt:
 	docker-compose run --rm freqtrade hyperopt \
 		--config user_data/config.json \
-		--hyperopt CourseHyperOpt \
+		--hyperopt CourseHyperopt \
 		--hyperopt-loss SharpeHyperOptLoss \
 		--strategy CourseStrategy \
 		--timerange 20200101- \
 		--stake-amount 0.01 \
 		--print-all \
 		--job-workers 8 \
-		--epochs 100
+		--epochs 250
 
-compress:
-	docker-compose run --rm freqtrade convert-data \
-		--format-from json \
-		--format-to jsongz \
-		-t 1h
+hyperopt_roi:
+	docker-compose run --rm freqtrade hyperopt \
+		--config user_data/config.json \
+		--hyperopt EmptyHyperopt \
+		--hyperopt-loss SharpeHyperOptLossDaily \
+		--spaces roi stoploss trailing \
+		--strategy CourseStrategy \
+		--timerange 20200101- \
+		--stake-amount 0.01 \
+		--print-all \
+		--job-workers 8 \
+		--epochs 250

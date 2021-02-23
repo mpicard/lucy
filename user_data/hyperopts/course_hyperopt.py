@@ -15,7 +15,7 @@ import talib.abstract as ta  # noqa
 import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 
-class CourseHyperOpt(IHyperOpt):
+class CourseHyperopt(IHyperOpt):
     """
     CourseHyperOpt for CourseStrategy
     """

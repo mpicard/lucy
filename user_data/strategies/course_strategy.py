@@ -130,7 +130,7 @@ class CourseStrategy(IStrategy):
         dataframe.loc[
             (
                 (dataframe["close"] > dataframe["bb_middleband"])
-                & (dataframe["rsi"] >= 61)
+                & (dataframe["rsi"] > 60)
                 & (dataframe["volume"] > 0)
             ),
             "sell",
