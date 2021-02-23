@@ -3,23 +3,30 @@ run:
 
 download:
 	docker-compose run --rm freqtrade download-data \
-		-t 15m \
-		--days 500 \
-		$(ARGS)
+		--config user_data/config.json \
+		-t 1h \
+		--days 500
 
 backtest:
 	docker-compose run --rm freqtrade backtesting \
+		--config user_data/config.json \
 		--strategy CourseStrategy \
-		$(ARGS)
+		--timerange 20200101-
 
 hyperopt:
 	docker-compose run --rm freqtrade hyperopt \
+		--config user_data/config.json \
 		--hyperopt CourseHyperOpt \
 		--hyperopt-loss SharpeHyperOptLoss \
 		--strategy CourseStrategy \
-		--ticker-interval 1h \
-		--config user_data/config.json \
+		--timerange 20200101- \
 		--stake-amount 0.01 \
-		--timerange 20200101-20211231 \
-		-j 8 \
-		-e 1000
+		--print-all \
+		--job-workers 8 \
+		--epochs 100
+
+compress:
+	docker-compose run --rm freqtrade convert-data \
+		--format-from json \
+		--format-to jsongz \
+		-t 1h

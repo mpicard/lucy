@@ -21,6 +21,40 @@ class CourseHyperOpt(IHyperOpt):
     """
 
     @staticmethod
+    def populate_indicators(dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe["rsi"] = ta.RSI(dataframe)
+
+        bollinger = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=1
+        )
+        dataframe["bb1_lowerband"] = bollinger["lower"]
+        dataframe["bb1_middleband"] = bollinger["mid"]
+        dataframe["bb1_upperband"] = bollinger["upper"]
+
+        bollinger = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=2
+        )
+        dataframe["bb2_lowerband"] = bollinger["lower"]
+        dataframe["bb2_middleband"] = bollinger["mid"]
+        dataframe["bb2_upperband"] = bollinger["upper"]
+
+        bollinger = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=3
+        )
+        dataframe["bb3_lowerband"] = bollinger["lower"]
+        dataframe["bb3_middleband"] = bollinger["mid"]
+        dataframe["bb3_upperband"] = bollinger["upper"]
+
+        bollinger = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=4
+        )
+        dataframe["bb4_lowerband"] = bollinger["lower"]
+        dataframe["bb4_middleband"] = bollinger["mid"]
+        dataframe["bb4_upperband"] = bollinger["upper"]
+
+        return dataframe
+
+    @staticmethod
     def buy_strategy_generator(params: Dict[str, Any]) -> Callable:
         """
         Define the buy strategy parameters to be used by Hyperopt.
@@ -34,12 +68,18 @@ class CourseHyperOpt(IHyperOpt):
 
             # GUARDS AND TRENDS
             if "rsi-enabled" in params and params["rsi-enabled"]:
-                conditions.append(dataframe["rsi"] < params["rsi-value"])
+                conditions.append(dataframe["rsi"] > params["rsi-value"])
 
             # TRIGGERS
             if "trigger" in params:
-                if params["trigger"] == "bb_lower":
-                    conditions.append(dataframe["close"] < dataframe["bb_lowerband"])
+                if params["trigger"] == "bb1_lower":
+                    conditions.append(dataframe["close"] < dataframe["bb1_lowerband"])
+                if params["trigger"] == "bb2_lower":
+                    conditions.append(dataframe["close"] < dataframe["bb2_lowerband"])
+                if params["trigger"] == "bb3_lower":
+                    conditions.append(dataframe["close"] < dataframe["bb3_lowerband"])
+                if params["trigger"] == "bb4_lower":
+                    conditions.append(dataframe["close"] < dataframe["bb4_lowerband"])
 
             # Check that volume is not 0
             conditions.append(dataframe["volume"] > 0)
@@ -57,9 +97,17 @@ class CourseHyperOpt(IHyperOpt):
         Define your Hyperopt space for searching buy strategy parameters.
         """
         return [
-            Integer(20, 40, name="rsi-value"),
+            Integer(5, 50, name="rsi-value"),
             Categorical([True, False], name="rsi-enabled"),
-            Categorical(["bb_lower"], name="trigger"),
+            Categorical(
+                [
+                    "bb1_lower",
+                    "bb2_lower",
+                    "bb3_lower",
+                    "bb4_lower",
+                ],
+                name="trigger",
+            ),
         ]
 
     @staticmethod
@@ -80,8 +128,12 @@ class CourseHyperOpt(IHyperOpt):
 
             # TRIGGERS
             if "sell-trigger" in params:
-                if params["sell-trigger"] == "sell-bb_upper":
-                    conditions.append(dataframe["close"] > dataframe["bb_upperband"])
+                if params["sell-trigger"] == "sell-bb1_lower":
+                    conditions.append(dataframe["close"] > dataframe["bb1_lowerband"])
+                if params["sell-trigger"] == "sell-bb1_middle":
+                    conditions.append(dataframe["close"] > dataframe["bb1_middleband"])
+                if params["sell-trigger"] == "sell-bb1_upper":
+                    conditions.append(dataframe["close"] > dataframe["bb1_upperband"])
 
             # Check that volume is not 0
             conditions.append(dataframe["volume"] > 0)
@@ -99,73 +151,10 @@ class CourseHyperOpt(IHyperOpt):
         Define your Hyperopt space for searching sell strategy parameters.
         """
         return [
-            Integer(60, 100, name="sell-rsi-value"),
+            Integer(30, 100, name="sell-rsi-value"),
             Categorical([True, False], name="sell-rsi-enabled"),
-            Categorical(["sell-bb_upper"], name="sell-trigger"),
-        ]
-
-    @staticmethod
-    def generate_roi_table(params: Dict) -> Dict[int, float]:
-        """
-        Generate the ROI table that will be used by Hyperopt
-        """
-        roi_table = {}
-        roi_table[0] = params["roi_p1"] + params["roi_p2"] + params["roi_p3"]
-        roi_table[params["roi_t3"]] = params["roi_p1"] + params["roi_p2"]
-        roi_table[params["roi_t3"] + params["roi_t2"]] = params["roi_p1"]
-        roi_table[params["roi_t3"] + params["roi_t2"] + params["roi_t1"]] = 0
-
-        return roi_table
-
-    @staticmethod
-    def roi_space() -> List[Dimension]:
-        """
-        Values to search for each ROI step
-        """
-        return [
-            Integer(10, 120, name="roi_t1"),
-            Integer(10, 60, name="roi_t2"),
-            Integer(10, 40, name="roi_t3"),
-            Real(0.01, 0.04, name="roi_p1"),
-            Real(0.01, 0.07, name="roi_p2"),
-            Real(0.01, 0.20, name="roi_p3"),
-        ]
-
-    @staticmethod
-    def stoploss_space() -> List[Dimension]:
-        """
-        Stoploss value to search for
-        """
-        return [Real(-0.5, -0.02, name="stoploss")]
-
-    def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Based on TA indicators. Should be a copy of same method from strategy.
-        Must align to populate_indicators in this file.
-        Only used when --spaces does not include buy space.
-        """
-        dataframe.loc[
-            (
-                (dataframe["close"] < dataframe["bb_lowerband"])
-                & (dataframe["rsi"] < 21)
+            Categorical(
+                ["sell-bb1_lower", "sell-bb1_middle", "sell-bb1_upper"],
+                name="sell-trigger",
             ),
-            "buy",
-        ] = 1
-
-        return dataframe
-
-    def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Based on TA indicators. Should be a copy of same method from strategy.
-        Must align to populate_indicators in this file.
-        Only used when --spaces does not include sell space.
-        """
-        dataframe.loc[
-            (
-                (qtpylib.crossed_above(dataframe["macdsignal"], dataframe["macd"]))
-                & (dataframe["fastd"] > 54)
-            ),
-            "sell",
-        ] = 1
-
-        return dataframe
+        ]

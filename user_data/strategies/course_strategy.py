@@ -45,7 +45,7 @@ class CourseStrategy(IStrategy):
     ignore_roi_if_buy_signal = False
 
     # Number of candles the strategy requires before producing valid signals
-    startup_candle_count: int = 30
+    startup_candle_count: int = 20
 
     # Optional order type mapping.
     order_types = {
@@ -59,15 +59,8 @@ class CourseStrategy(IStrategy):
     order_time_in_force = {"buy": "gtc", "sell": "gtc"}
 
     plot_config = {
-        "main_plot": {
-            "tema": {},
-            "sar": {"color": "white"},
-        },
+        "main_plot": {},
         "subplots": {
-            "MACD": {
-                "macd": {"color": "blue"},
-                "macdsignal": {"color": "orange"},
-            },
             "RSI": {
                 "rsi": {"color": "red"},
             },
@@ -96,10 +89,6 @@ class CourseStrategy(IStrategy):
         :param metadata: Additional information, like the currently traded pair
         :return: a Dataframe with all mandatory indicators for the strategies
         """
-
-        # ADX
-        dataframe["adx"] = ta.ADX(dataframe)
-
         # RSI
         dataframe["rsi"] = ta.RSI(dataframe)
 
@@ -122,11 +111,8 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                # Signal: RSI crosses above 30
-                (qtpylib.crossed_above(dataframe["rsi"], 30))
-                # Signal: close lower than lowerband
+                (qtpylib.crossed_above(dataframe["rsi"], 20))
                 & (dataframe["close"] < dataframe["bb_lowerband"])
-                # Make sure Volume is not 0
                 & (dataframe["volume"] > 0)
             ),
             "buy",
@@ -143,11 +129,11 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                # Signal: close over bb middle
                 (dataframe["close"] > dataframe["bb_middleband"])
-                # Make sure Volume is not 0
+                & (dataframe["rsi"] >= 61)
                 & (dataframe["volume"] > 0)
             ),
             "sell",
         ] = 1
+
         return dataframe
