@@ -104,32 +104,32 @@ class CourseHyperOpt(IHyperOpt):
             Categorical(["sell-bb_upper"], name="sell-trigger"),
         ]
 
-    # @staticmethod
-    # def generate_roi_table(params: Dict) -> Dict[int, float]:
-    #     """
-    #     Generate the ROI table that will be used by Hyperopt
-    #     """
-    #     roi_table = {}
-    #     roi_table[0] = params["roi_p1"] + params["roi_p2"] + params["roi_p3"]
-    #     roi_table[params["roi_t3"]] = params["roi_p1"] + params["roi_p2"]
-    #     roi_table[params["roi_t3"] + params["roi_t2"]] = params["roi_p1"]
-    #     roi_table[params["roi_t3"] + params["roi_t2"] + params["roi_t1"]] = 0
+    @staticmethod
+    def generate_roi_table(params: Dict) -> Dict[int, float]:
+        """
+        Generate the ROI table that will be used by Hyperopt
+        """
+        roi_table = {}
+        roi_table[0] = params["roi_p1"] + params["roi_p2"] + params["roi_p3"]
+        roi_table[params["roi_t3"]] = params["roi_p1"] + params["roi_p2"]
+        roi_table[params["roi_t3"] + params["roi_t2"]] = params["roi_p1"]
+        roi_table[params["roi_t3"] + params["roi_t2"] + params["roi_t1"]] = 0
 
-    #     return roi_table
+        return roi_table
 
-    # @staticmethod
-    # def roi_space() -> List[Dimension]:
-    #     """
-    #     Values to search for each ROI step
-    #     """
-    #     return [
-    #         Integer(10, 120, name="roi_t1"),
-    #         Integer(10, 60, name="roi_t2"),
-    #         Integer(10, 40, name="roi_t3"),
-    #         Real(0.01, 0.04, name="roi_p1"),
-    #         Real(0.01, 0.07, name="roi_p2"),
-    #         Real(0.01, 0.20, name="roi_p3"),
-    #     ]
+    @staticmethod
+    def roi_space() -> List[Dimension]:
+        """
+        Values to search for each ROI step
+        """
+        return [
+            Integer(10, 120, name="roi_t1"),
+            Integer(10, 60, name="roi_t2"),
+            Integer(10, 40, name="roi_t3"),
+            Real(0.01, 0.04, name="roi_p1"),
+            Real(0.01, 0.07, name="roi_p2"),
+            Real(0.01, 0.20, name="roi_p3"),
+        ]
 
     @staticmethod
     def stoploss_space() -> List[Dimension]:
