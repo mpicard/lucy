@@ -1,3 +1,6 @@
+run:
+	docker-compose up -d
+
 download:
 	docker-compose run --rm freqtrade download-data \
 		-t 1h \
