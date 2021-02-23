@@ -3,8 +3,8 @@ run:
 
 download:
 	docker-compose run --rm freqtrade download-data \
-		-t 1h \
-		--days 1000 \
+		-t 15m \
+		--days 500 \
 		$(ARGS)
 
 backtest:
@@ -19,4 +19,7 @@ hyperopt:
 		--strategy CourseStrategy \
 		--ticker-interval 1h \
 		--config user_data/config.json \
-		-j 2
+		--stake-amount 0.01 \
+		--timerange 20200101-20211231 \
+		-j 8 \
+		-e 1000
