@@ -20,7 +20,7 @@ hyperopt:
 		--hyperopt-loss SharpeHyperOptLoss \
 		--strategy CourseStrategy \
 		--timerange 20200101- \
-		--stake-amount 0.01 \
+		--stake-amount 0.02 \
 		--print-all \
 		--job-workers 8 \
 		--epochs 250
@@ -33,7 +33,6 @@ hyperopt_roi:
 		--spaces roi stoploss trailing \
 		--strategy CourseStrategy \
 		--timerange 20200101- \
-		--stake-amount 0.01 \
-		--print-all \
+		--stake-amount 0.02 \
 		--job-workers 8 \
 		--epochs 250

@@ -21,11 +21,11 @@ class CourseStrategy(IStrategy):
 
     # Minimal ROI designed for the strategy.
     # This attribute will be overridden if the config file contains "minimal_roi".
-    minimal_roi = {"60": 0.01, "30": 0.02, "0": 0.04}
+    minimal_roi = {"0": 0.27614, "298": 0.20814, "972": 0.09077, "2297": 0}
 
     # Optimal stoploss designed for the strategy.
     # This attribute will be overridden if the config file contains "stoploss".
-    stoploss = -0.99
+    stoploss = -0.31226
 
     # Trailing stoploss
     trailing_stop = False
@@ -93,12 +93,19 @@ class CourseStrategy(IStrategy):
         dataframe["rsi"] = ta.RSI(dataframe)
 
         # Bollinger Bands
-        bollinger = qtpylib.bollinger_bands(
-            qtpylib.typical_price(dataframe), window=20, stds=2
+        bollinger1 = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=1
         )
-        dataframe["bb_lowerband"] = bollinger["lower"]
-        dataframe["bb_middleband"] = bollinger["mid"]
-        dataframe["bb_upperband"] = bollinger["upper"]
+        dataframe["bb1_lowerband"] = bollinger1["lower"]
+        dataframe["bb1_middleband"] = bollinger1["mid"]
+        dataframe["bb1_upperband"] = bollinger1["upper"]
+
+        bollinger4 = qtpylib.bollinger_bands(
+            qtpylib.typical_price(dataframe), window=20, stds=4
+        )
+        dataframe["bb4_lowerband"] = bollinger4["lower"]
+        dataframe["bb4_middleband"] = bollinger4["mid"]
+        dataframe["bb4_upperband"] = bollinger4["upper"]
 
         return dataframe
 
@@ -111,8 +118,8 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (qtpylib.crossed_above(dataframe["rsi"], 20))
-                & (dataframe["close"] < dataframe["bb_lowerband"])
+                (qtpylib.crossed_above(dataframe["rsi"], 18))
+                & (dataframe["close"] < dataframe["bb4_lowerband"])
                 & (dataframe["volume"] > 0)
             ),
             "buy",
@@ -129,8 +136,8 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (dataframe["close"] > dataframe["bb_middleband"])
-                & (dataframe["rsi"] > 60)
+                (dataframe["close"] > dataframe["bb1_lowerband"])
+                & (dataframe["rsi"] > 72)
                 & (dataframe["volume"] > 0)
             ),
             "sell",
