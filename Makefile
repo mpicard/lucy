@@ -4,7 +4,7 @@ run:
 download:
 	docker-compose run --rm freqtrade download-data \
 		--config user_data/config.json \
-		-t 15m \
+		-t 5m 15m \
 		--days 500
 
 backtest:
@@ -21,7 +21,7 @@ hyperopt:
 		--strategy CourseStrategy \
 		--timerange 20200101- \
 		--stake-amount 0.02 \
-		--job-workers 1 \
+		--job-workers 8 \
 		--epochs 1000
 
 hyperopt_roi:

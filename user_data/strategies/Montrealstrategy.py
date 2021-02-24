@@ -12,7 +12,7 @@ import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 class CourseStrategy(IStrategy):
     """
-    Strategy developed in udemy course
+    Strategy developed in udemy course, really sucks actually
     """
 
     # Strategy interface version - allow new iterations of the strategy interface.
@@ -21,11 +21,11 @@ class CourseStrategy(IStrategy):
 
     # Minimal ROI designed for the strategy.
     # This attribute will be overridden if the config file contains "minimal_roi".
-    minimal_roi = {"0": 0.27614, "298": 0.20814, "972": 0.09077, "2297": 0}
+    minimal_roi = {"0": 0.31651, "79": 0.07068, "147": 0.04049, "345": 0}
 
     # Optimal stoploss designed for the strategy.
     # This attribute will be overridden if the config file contains "stoploss".
-    stoploss = -0.31226
+    stoploss = -0.28646
 
     # Trailing stoploss
     trailing_stop = False
@@ -118,7 +118,7 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (qtpylib.crossed_above(dataframe["rsi"], 18))
+                (qtpylib.crossed_above(dataframe["rsi"], 46))
                 & (dataframe["close"] < dataframe["bb4_lowerband"])
                 & (dataframe["volume"] > 0)
             ),
@@ -136,8 +136,7 @@ class CourseStrategy(IStrategy):
         """
         dataframe.loc[
             (
-                (dataframe["close"] > dataframe["bb1_lowerband"])
-                & (dataframe["rsi"] > 72)
+                (dataframe["close"] > dataframe["bb1_upperband"])
                 & (dataframe["volume"] > 0)
             ),
             "sell",

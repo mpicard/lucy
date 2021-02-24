@@ -123,8 +123,8 @@ class CourseHyperopt(IHyperOpt):
             conditions = []
 
             # GUARDS AND TRENDS
-            if "sell-rsi-enabled" in params and params["sell-rsi-enabled"]:
-                conditions.append(dataframe["rsi"] > params["sell-rsi-value"])
+            # if "sell-rsi-enabled" in params and params["sell-rsi-enabled"]:
+            #     conditions.append(dataframe["rsi"] > params["sell-rsi-value"])
 
             # TRIGGERS
             if "sell-trigger" in params:

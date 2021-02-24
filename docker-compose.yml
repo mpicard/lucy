@@ -2,7 +2,7 @@
 version: '3'
 services:
   freqtrade:
-    image: freqtradeorg/freqtrade:stable
+    image: freqtradeorg/freqtrade:develop
     # image: freqtradeorg/freqtrade:develop_plot
     restart: unless-stopped
     container_name: freqtrade
