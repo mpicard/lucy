@@ -34,7 +34,7 @@ class CourseStrategy(IStrategy):
     # trailing_stop_positive_offset = 0.0  # Disabled / not configured
 
     # Optimal ticker interval for the strategy.
-    timeframe = "1h"
+    timeframe = "15m"
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
