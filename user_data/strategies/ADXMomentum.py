@@ -41,10 +41,10 @@ class ADXMomentum(IStrategy):
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                (dataframe["adx"] > 24)
-                # & (dataframe["mom"] > 0)
-                # & (dataframe["plus_di"] > 25)
-                # & (dataframe["plus_di"] > dataframe["minus_di"])
+                (dataframe["adx"] > 26)
+                & (dataframe["mom"] > 0)
+                & (dataframe["plus_di"] > 25)
+                & (dataframe["plus_di"] > dataframe["minus_di"])
             ),
             "buy",
         ] = 1
