@@ -122,10 +122,6 @@ class CourseHyperopt(IHyperOpt):
             """
             conditions = []
 
-            # GUARDS AND TRENDS
-            # if "sell-rsi-enabled" in params and params["sell-rsi-enabled"]:
-            #     conditions.append(dataframe["rsi"] > params["sell-rsi-value"])
-
             # TRIGGERS
             if "sell-trigger" in params:
                 if params["sell-trigger"] == "sell-bb1_lower":
@@ -151,8 +147,6 @@ class CourseHyperopt(IHyperOpt):
         Define your Hyperopt space for searching sell strategy parameters.
         """
         return [
-            Integer(30, 100, name="sell-rsi-value"),
-            Categorical([True, False], name="sell-rsi-enabled"),
             Categorical(
                 ["sell-bb1_lower", "sell-bb1_middle", "sell-bb1_upper"],
                 name="sell-trigger",
